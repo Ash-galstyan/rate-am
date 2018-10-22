@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This is the backend files directory for the \"Rate.am\" project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "dateformat": "^3.0.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "express-partials": "^0.3.0",
+    "mysql": "^2.16.0",
+    "request": "^2.88.0",
+    "requestify": "^0.2.5",
+    "router": "^1.3.3",
+    "tether": "^1.4.5"
+  }
+}
