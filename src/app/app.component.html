@@ -1,0 +1,19 @@
+<mat-grid-list cols="3" rowHeight="400px">
+  <mat-grid-tile>
+    <div class="logo">
+      <a [routerLink]="['/']">
+        <div class="nav-logo">
+          <img src="/assets/img/logo.png" width="160" height="52"/>
+        </div>
+        <div style="text-align:center">
+          <h1>
+            Welcome to {{ title }}!
+          </h1>
+        </div>
+      </a>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <app-navigation-menu></app-navigation-menu>
+  </mat-grid-tile>
+</mat-grid-list>
