@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const mysql = require('mysql');
 
 const con = mysql.createConnection({
-  host: "54.86.92.122",
+  host: "localhost",
   user: "root",
   password: "mysql111",
   port: 3306,

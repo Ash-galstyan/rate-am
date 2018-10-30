@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 const con = mysql.createConnection({
-  host: '54.86.92.122',
+  host: 'localhost',
   user: 'root',
   password: 'mysql111',
   database: 'rate'
