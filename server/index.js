@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 const con = mysql.createConnection({
-  host: 'localhost',
+  host: '54.86.92.122',
   user: 'root',
   password: 'mysql111',
   database: 'rate'
@@ -69,7 +69,6 @@ app.get('/rates', function (req, res) {
     });
   });
 });
-//asdsadasdasdasd
 app.listen(80, function () {
-  console.log('Node app is running on port 8080');
+  console.log('Node app is running');
 });
