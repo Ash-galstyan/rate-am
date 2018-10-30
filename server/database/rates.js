@@ -32,7 +32,7 @@ con.connect(function (err) {
   });
 });
 
-cron.schedule("5,20,35,50 * * * *", function () {
+cron.schedule("* * * * *", function () {
   request('https://rate.am', function (error, response, html) {
     if (!error && response.statusCode === 200) {
       let $ = cheerio.load(html);
