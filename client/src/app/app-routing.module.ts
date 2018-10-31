@@ -7,8 +7,10 @@ import { ExchangePointsComponent } from './exchange-points/exchange-points.compo
 import { InternationalRatesComponent } from './international-rates/international-rates.component';
 import { InvestmentOrganizationsComponent } from './investment-organizations/investment-organizations.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { AppComponent } from './app.component';
 
 const appRoutes: Routes = [
+  {path: 'home', component: AppComponent},
   {path: 'banks', component: BanksComponent},
   {path: 'central-bank', component: CentralBankComponent},
   {
@@ -33,7 +35,7 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/bank',
+    redirectTo: '/home',
     pathMatch: 'full'
   },
   {path: '**', component: ErrorPageComponent}

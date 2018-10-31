@@ -1,0 +1,20 @@
+::ng-deep {
+  table {
+    width: 100%;
+  }
+
+  .separator {
+    margin: 0 1rem;
+  }
+}
+
+.logo {
+  display: inline-block;
+  width: 50%
+}
+
+.top_bar_right_side_items {
+  text-align: right;
+  display: inline-block;
+  width: 50%
+}
