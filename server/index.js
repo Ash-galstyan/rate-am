@@ -18,21 +18,13 @@ const con = mysql.createConnection({
 
 con.connect();
 
-app.use(cors({origin: 'http://localhost:8888'}));
+app.use(cors({ origin: '*' }));
 
 app.get('/', function (req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
   return res.send({ error: true, message: 'hello' })
 });
 
 app.get('/rates', function (req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true); 
   let banks = {}, currency = {}, lastDate, lastRates, finalResult = [];
   con.query('SELECT * FROM rates', function (error, results, fields) {
     if (error) throw error;
