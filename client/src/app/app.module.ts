@@ -10,7 +10,25 @@ import { InvestmentOrganizationsComponent } from './investment-organizations/inv
 import { CentralBankComponent } from './central-bank/central-bank.component';
 import { InternationalRatesComponent } from './international-rates/international-rates.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
-import { AppRoutingModule } from './/app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule } from '@angular/material/card';
+import {
+  MatTabsModule,
+  MatFormFieldModule,
+  MatNativeDateModule,
+  MatInputModule,
+  MatSelectModule
+} from '@angular/material';
+import { NavigationMenuComponent } from './navigation-menu/navigation-menu.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTableModule } from '@angular/material/table';
+import { MomentModule } from 'ngx-moment';
+import { TableHeaderComponent } from './table-header/table-header.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -21,14 +39,30 @@ import { AppRoutingModule } from './/app-routing.module';
     InvestmentOrganizationsComponent,
     CentralBankComponent,
     InternationalRatesComponent,
-    ErrorPageComponent
+    ErrorPageComponent,
+    NavigationMenuComponent,
+    TableHeaderComponent
   ],
   imports: [
     BrowserModule,
     NgxDatatableModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatTabsModule,
+    MatGridListModule,
+    MatTableModule,
+    MomentModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatSelectModule
   ],
-  providers: [],
+  providers: [MatDatepickerModule, MatNativeDateModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
