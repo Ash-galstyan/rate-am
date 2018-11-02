@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-table-header',
-  styleUrls: ['./table-header.component.scss'],
+  selector: 'app-data-search',
   template: `
     <mat-card>
       <mat-card-content class="table-header-section">
@@ -32,13 +31,14 @@ import { Component, Input, OnInit } from '@angular/core';
         </section>
       </mat-card-content>
     </mat-card>
-  `
+  `,
+  styleUrls: ['./data-search.component.scss']
 })
-export class TableHeaderComponent implements OnInit {
+export class DataSearchComponent implements OnInit {
   @Input() exchangeTypes: any[];
   @Input() rateTypes: any[];
   value: any;
-  
+
   constructor() {
   }
 

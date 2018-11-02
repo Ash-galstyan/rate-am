@@ -1,18 +1,6 @@
-<div class="logo">
-  <div class="nav-logo">
-    <a [routerLink]="['']">
-      <img src="/assets/img/logo.png" width="160" height="52"/>
-    </a>
-  </div>
-</div>
-<div class="top_bar_right_side_items">
-  <div class="top-bar">
-    <div class="date_and_time">
-      <h4>{{date | date: 'full'}}, Yerevan, Armenia</h4>
-    </div>
-    <div class="language_changers">
+<div class="main-container">
+  <app-table-header></app-table-header>
+  <app-navigation-menu></app-navigation-menu>
+  <router-outlet></router-outlet>
 
-    </div>
-  </div>
 </div>
-<app-navigation-menu></app-navigation-menu>
