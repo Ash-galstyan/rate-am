@@ -41,7 +41,7 @@ con.connect(function (err) {
   });
 });
 
-cron.schedule("* * * * *", function () {
+cron.schedule("14,29,44,59 * * * *", function () {
   request({
     url: 'http://rate.am/am/armenian-dram-exchange-rates/exchange-points/cash?tp=1&rt=0&rt=0&ext=2',
     headers: {
