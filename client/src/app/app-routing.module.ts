@@ -1,51 +1,35 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { BanksComponent } from './banks/banks.component';
-import { CentralBankComponent } from './central-bank/central-bank.component';
-import { CreditOrganizationsComponent } from './credit-organizations/credit-organizations.component';
-import { ExchangePointsComponent } from './exchange-points/exchange-points.component';
-import { InternationalRatesComponent } from './international-rates/international-rates.component';
-import { InvestmentOrganizationsComponent } from './investment-organizations/investment-organizations.component';
-import { ErrorPageComponent } from './error-page/error-page.component';
-import { AppComponent } from './app.component';
+import { Routes } from '@angular/router';
+import { BanksComponent } from './pages/banks/banks.component';
+import { ExchangePointsComponent } from './pages/exchange-points/exchange-points.component';
+import { CreditOrganizationsComponent } from './pages/credit-organizations/credit-organizations.component';
+import { InvestmentOrganizationsComponent } from './pages/investment-organizations/investment-organizations.component';
+import { CentralBankComponent } from './pages/central-bank/central-bank.component';
+import { InternationalRatesComponent } from './pages/international-rates/international-rates.component';
 
-const appRoutes: Routes = [
-  {path: 'home', component: AppComponent},
-  {path: 'banks', component: BanksComponent},
-  {path: 'central-bank', component: CentralBankComponent},
+export const routes: Routes = [
+  {path: '', redirectTo: '/banks', pathMatch: 'full'},
   {
-    path: 'credit-organizations',
-    component: CreditOrganizationsComponent,
-    data: {title: 'Heroes List'}
+    path: 'banks',
+    component: BanksComponent
   },
   {
     path: 'exchange-points',
-    component: ExchangePointsComponent,
-    data: {title: 'Heroes List'}
+    component: ExchangePointsComponent
   },
   {
-    path: 'international-rates',
-    component: InternationalRatesComponent,
-    data: {title: 'Heroes List'}
+    path: 'credit-organizations',
+    component: CreditOrganizationsComponent
   },
   {
     path: 'investment-organizations',
-    component: InvestmentOrganizationsComponent,
-    data: {title: 'Heroes List'}
+    component: InvestmentOrganizationsComponent
   },
   {
-    path: '',
-    redirectTo: '/home',
-    pathMatch: 'full'
+    path: 'central-bank',
+    component: CentralBankComponent
   },
-  {path: '**', component: ErrorPageComponent}
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
-  exports: [
-    RouterModule
-  ]
-})
-export class AppRoutingModule {
-}
+  {
+    path: 'international-rates',
+    component: InternationalRatesComponent
+  }
+]

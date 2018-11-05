@@ -4,12 +4,11 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class BanksService {
-  
+export class ApiService {
+
   constructor(private http: HttpClient) { }
-  getBanks() {
-    return this.http.get('/api/rates').subscribe((banks:any[]) => {
-      return banks;
-    });
+
+  getData(url) {
+    return this.http.get(url)
   }
 }

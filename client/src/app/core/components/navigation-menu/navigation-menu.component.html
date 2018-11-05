@@ -1,0 +1,8 @@
+<nav class="nav-container">
+  <ul fxLayout="row" fxLayoutAlign="space-around center">
+    <li *ngFor="let item of submenuItems" class="nav-list">
+      <span [routerLink]="item.path" routerLinkActive="active-class" >{{ item.name }}</span>
+    </li>
+  </ul>
+
+</nav>
