@@ -76,58 +76,6 @@ app.get('/api/bankRates', function (req, res) {
   });
 });
 
-app.get('/api/exchangesPointsRates', function (req, res) {
-  let exchanges_points = {}, currency = {}, lastDate, finalResult = [];
-  con.query('SELECT * FROM rates', function (error, results, fields) {
-    if (error) throw error;
-    lastDate = results[results.length - 1].date;
-    con.query('SELECT * FROM currency', function (error, results, fields) {
-      if (error) throw error;
-      results.map(res => {
-        currency[res.id] = res.name;
-      });
-      con.query('SELECT * FROM institutions WHERE is_exchanges_points = 1', function (error, results, fields) {
-        if (error) throw error;
-        results.map(res => {
-          exchanges_points[res.id] = res.name;
-        });
-        let sql = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
-          "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS exchangesPoint_id," +
-          "institutions.is_exchanges_points AS is_exchanges_points FROM rates JOIN institutions ON rates.institutions_id = institutions.id WHERE is_exchanges_points = 1 AND date = " + lastDate;
-        con.query(sql, function (error, results, fields) {
-          if (error) throw error;
-          results.forEach(rate => {
-            const exchanges_point = finalResult.find(o => rate.exchangesPoint_id === o.exchangesPoint_id);
-            if (exchanges_point) {
-              exchanges_point.currency.push({
-                currency_id: rate.currency_id,
-                currency_Description: currency[`${rate.currency_id}`],
-                value_buy: rate.value_buy,
-                value_sell: rate.value_sell
-              });
-            } else {
-              const exchanges_point = {
-                exchangesPoint_id: rate.exchangesPoint_id,
-                exchangePoint_description: exchanges_points[rate.exchangesPoint_id],
-                currency: [],
-                date: rate.date
-              };
-              finalResult.push(exchanges_point);
-              exchanges_point.currency.push({
-                currency_id: rate.currency_id,
-                currency_Description: currency[rate.currency_id],
-                value_buy: rate.value_buy,
-                value_sell: rate.value_sell
-              })
-            }
-          });
-          res.send(finalResult)
-        });
-      });
-    });
-  });
-});
-
 app.get('/api/bankAverageRates', function (req, res) {
   let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0)-24*60*60;
   let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0)-24*60*60;
@@ -257,6 +205,163 @@ app.get('/api/bankAverageRates', function (req, res) {
     });
   });
 });
+
+app.get('/api/exchangesPointsRates', function (req, res) {
+  let exchanges_points = {}, currency = {}, lastDate, finalResult = [];
+  con.query('SELECT * FROM rates', function (error, results, fields) {
+    if (error) throw error;
+    lastDate = results[results.length - 1].date;
+    con.query('SELECT * FROM currency', function (error, results, fields) {
+      if (error) throw error;
+      results.map(res => {
+        currency[res.id] = res.name;
+      });
+      con.query('SELECT * FROM institutions WHERE is_exchanges_points = 1', function (error, results, fields) {
+        if (error) throw error;
+        results.map(res => {
+          exchanges_points[res.id] = res.name;
+        });
+        let sql = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
+          "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS exchangesPoint_id," +
+          "institutions.is_exchanges_points AS is_exchanges_points FROM rates JOIN institutions ON rates.institutions_id = institutions.id WHERE is_exchanges_points = 1 AND date = " + lastDate;
+        con.query(sql, function (error, results, fields) {
+          if (error) throw error;
+          results.forEach(rate => {
+            const exchanges_point = finalResult.find(o => rate.exchangesPoint_id === o.exchangesPoint_id);
+            if (exchanges_point) {
+              exchanges_point.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[`${rate.currency_id}`],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              });
+            } else {
+              const exchanges_point = {
+                exchangesPoint_id: rate.exchangesPoint_id,
+                exchangePoint_description: exchanges_points[rate.exchangesPoint_id],
+                currency: [],
+                date: rate.date
+              };
+              finalResult.push(exchanges_point);
+              exchanges_point.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[rate.currency_id],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              })
+            }
+          });
+          res.send(finalResult)
+        });
+      });
+    });
+  });
+});
+
+app.get('/api/creditOrganizationsRates', function (req, res) {
+  let credit_organizations = {}, currency = {}, lastDate, finalResult = [];
+  con.query('SELECT * FROM rates', function (error, results, fields) {
+    if (error) throw error;
+    lastDate = results[results.length - 1].date;
+    con.query('SELECT * FROM currency', function (error, results, fields) {
+      if (error) throw error;
+      results.map(res => {
+        currency[res.id] = res.name;
+      });
+      con.query('SELECT * FROM institutions WHERE is_credit_organizations = 1', function (error, results, fields) {
+        if (error) throw error;
+        results.map(res => {
+          credit_organizations[res.id] = res.name;
+        });
+        let sql = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
+          "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS creditOrganization_id," +
+          "institutions.is_credit_organizations AS is_credit_organizations FROM rates JOIN institutions ON rates.institutions_id = institutions.id WHERE is_credit_organizations = 1 AND date = " + lastDate;
+        con.query(sql, function (error, results, fields) {
+          if (error) throw error;
+          results.forEach(rate => {
+            const credit_organization = finalResult.find(o => rate.creditOrganization_id === o.creditOrganization_id);
+            if (credit_organization) {
+              credit_organization.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[`${rate.currency_id}`],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              });
+            } else {
+              const credit_organization = {
+                creditOrganization_id: rate.creditOrganization_id,
+                creditOrganization_description: credit_organizations[rate.creditOrganization_id],
+                currency: [],
+                date: rate.date
+              };
+              finalResult.push(credit_organization);
+              credit_organization.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[rate.currency_id],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              })
+            }
+          });
+          res.send(finalResult)
+        });
+      });
+    });
+  });
+});
+
+app.get('/api/investmentOrganizationsRates', function (req, res) {
+  let investment_organizations = {}, currency = {}, lastDate, finalResult = [];
+  con.query('SELECT * FROM rates', function (error, results, fields) {
+    if (error) throw error;
+    lastDate = results[results.length - 1].date;
+    con.query('SELECT * FROM currency', function (error, results, fields) {
+      if (error) throw error;
+      results.map(res => {
+        currency[res.id] = res.name;
+      });
+      con.query('SELECT * FROM institutions WHERE is_investment_organizations = 1', function (error, results, fields) {
+        if (error) throw error;
+        results.map(res => {
+          investment_organizations[res.id] = res.name;
+        });
+        let sql = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
+          "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS investmentOrganization_id," +
+          "institutions.is_investment_organizations AS is_investment_organizations FROM rates JOIN institutions ON rates.institutions_id = institutions.id WHERE is_investment_organizations = 1 AND date = " + lastDate;
+        con.query(sql, function (error, results, fields) {
+          if (error) throw error;
+          results.forEach(rate => {
+            const investment_organization = finalResult.find(o => rate.investmentOrganization_id === o.investmentOrganization_id);
+            if (investment_organization) {
+              investment_organization.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[`${rate.currency_id}`],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              });
+            } else {
+              const investment_organization = {
+                investmentOrganization_id: rate.investmentOrganization_id,
+                investmentOrganization_description: investment_organizations[rate.investmentOrganization_id],
+                currency: [],
+                date: rate.date
+              };
+              finalResult.push(investment_organization);
+              investment_organization.currency.push({
+                currency_id: rate.currency_id,
+                currency_Description: currency[rate.currency_id],
+                value_buy: rate.value_buy,
+                value_sell: rate.value_sell
+              })
+            }
+          });
+          res.send(finalResult)
+        });
+      });
+    });
+  });
+});
+
 
 app.listen(80, function () {
   console.log('Node app is running');
