@@ -57,7 +57,7 @@ con.connect(function (err) {
   });
 });
 
-cron.schedule("* * * * *", function () {
+cron.schedule("14,29,44,59 * * * *", function () {
   request('https://rate.am', function (error, response, html) {
     if (!error && response.statusCode === 200) {
       let $ = cheerio.load(html);
