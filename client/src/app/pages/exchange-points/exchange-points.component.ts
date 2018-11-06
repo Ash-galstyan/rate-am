@@ -4,8 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-exchange-points',
   template: `
     <app-rate-table [api]="'exchangesPointsRates'"></app-rate-table>
-  `,
-  styleUrls: ['./exchange-points.component.scss']
+  `
 })
 export class ExchangePointsComponent implements OnInit {
 
