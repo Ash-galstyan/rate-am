@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-banks',
   template:`
-    <app-rate-table></app-rate-table>
+    <app-rate-table [api]="'bankRates'"></app-rate-table>
   `,
   styleUrls: ['./banks.component.scss']
 })

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-table-header',
@@ -12,15 +12,24 @@ import { Component } from '@angular/core';
       </div>
       <div>
         <h4>{{date | date: 'full'}}, Yerevan, Armenia</h4>
+        <p></p>
       </div>
     </div>
 
   `
 })
-export class HeaderComponent {
-  date: number = Date.now();
+export class HeaderComponent implements OnInit {
+  date: any;
 
-  constructor() {
+  constructor() { }
+
+  ngOnInit() {
+    this.getDate()
   }
 
+  getDate() {
+    setInterval(() => {
+      this.date = new Date();
+    }, 1);
+  }
 }

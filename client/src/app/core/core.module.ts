@@ -20,6 +20,7 @@ import { HeaderComponent } from './components/table-header/header.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { DataSearchComponent } from './data-search/data-search.component';
 import { RateTableComponent } from './components/rate-table/rate-table.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { RateTableComponent } from './components/rate-table/rate-table.component
     MatNativeDateModule,
     MatSelectModule,
     RouterModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatProgressSpinnerModule
   ],
   declarations: [
     ErrorPageComponent,

@@ -1,0 +1,21 @@
+.main-select.mat-form-field-appearance-legacy {
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
+
+    .mat-form-field-infix {
+      border-top: 0;
+    }
+
+    .mat-form-field-underline {
+      display: none;
+    }
+
+    .mat-select-value {
+      text-align: center;
+
+      .mat-select-value-text {
+        font-size: 14px;
+      }
+    }
+  }
+}

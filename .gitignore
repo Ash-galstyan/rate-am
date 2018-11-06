@@ -16,6 +16,7 @@ client/.idea
 *.launch
 .settings/
 *.sublime-workspace
+.idea/
 
 # IDE - VSCode
 .vscode/*
