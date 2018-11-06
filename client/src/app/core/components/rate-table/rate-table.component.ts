@@ -24,7 +24,7 @@ export class RateTableComponent implements OnInit {
     private banksService: ApiService) { }
 
   ngOnInit() {
-    this.banksService.getData(this.api).subscribe(resp => {
+    this.banksService.getData('http://54.86.92.122/api/' + this.api).subscribe(resp => {
       this.data = resp;
       this.data.forEach(o => {
         o.rates = {};
