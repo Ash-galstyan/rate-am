@@ -6,55 +6,20 @@
     <div fxFlex="3" fxLayout="row" fxLayoutAlign="center center" fxHide.xs></div>
     <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center">Bank</div>
     <div fxFlex="11" fxLayout="row" fxHide.xs fxLayoutAlign="center center">Date</div>
-    <div fxFlex="45" fxFlex.gt-md="16" fxLayout="column" fxLayoutAlign="center center">
+    <div fxFlex="45"
+         fxFlex.gt-md="16"
+         fxLayout="column"
+         fxLayoutAlign="center center"
+         *ngFor="let select of displayedSelects; let i = index">
       <div>
         <mat-form-field class="main-select">
-          <mat-select [(ngModel)]="selectedOption">
+          <mat-select [(ngModel)]="displayedSelects[i]">
             <mat-option *ngFor="let option of currencyOptions" [value]="option">
               {{option}}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="currency-info" fxLayout="row" fxLayoutAlign=" center">
-        <p fxFlex="50">Buy</p>
-        <p fxFlex="50">Sell</p>
-      </div>
-    </div>
-    <div fxFlex="16" fxLayout="column" fxLayoutAlign="center center" fxHide fxShow.gt-md>
-      <mat-form-field class="main-select">
-        <mat-select [(ngModel)]="SecondSelectedOption">
-          <mat-option *ngFor="let option of currencyOptions" [value]="option">
-            {{option}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="currency-info" fxLayout="row" fxLayoutAlign=" center">
-        <p fxFlex="50">Buy</p>
-        <p fxFlex="50">Sell</p>
-      </div>
-    </div>
-    <div fxFlex="16" fxLayout="column" fxLayoutAlign="center center" fxHide fxShow.gt-md>
-      <mat-form-field class="main-select">
-        <mat-select [(ngModel)]="thirdSelectedOption">
-          <mat-option *ngFor="let option of currencyOptions" [value]="option">
-            {{option}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="currency-info" fxLayout="row" fxLayoutAlign=" center">
-        <p fxFlex="50">Buy</p>
-        <p fxFlex="50">Sell</p>
-      </div>
-    </div>
-    <div fxFlex="16" fxLayout="column" fxLayoutAlign="center center" fxHide fxShow.gt-md>
-      <mat-form-field class="main-select">
-        <mat-select [(ngModel)]="fourthSelectedOption">
-          <mat-option *ngFor="let option of currencyOptions" [value]="option">
-            {{option}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
       <div class="currency-info" fxLayout="row" fxLayoutAlign=" center">
         <p fxFlex="50">Buy</p>
         <p fxFlex="50">Sell</p>
@@ -67,48 +32,23 @@
         {{i + 1}}
       </div>
       <div class="table-column label-style" fxFlex="grow" fxLayout="row" fxLayoutAlign="start center">
-        {{item.bank_description}}
+        {{item.description}}
       </div>
       <div class="table-column" fxLayout="row" fxHide.xs fxFlex="11" fxLayoutAlign="center center">
         {{item.date *1000 | date:'dd MMM, HH:mm'}}
       </div>
-      <div class="table-column" fxFlex="45" fxFlex.gt-md="16" fxLayout="row" fxLayoutAlign="start center">
+      <div class="table-column"
+           fxFlex="45"
+           fxFlex.gt-md="16"
+           fxLayout="row"
+           fxLayoutAlign="start center"
+           *ngFor="let select of displayedSelects; let i = index">
         <div class="currency-value" fxFlex fxLayout="row" fxLayoutAlign=" center">
           <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[selectedOption].value_buy}}
+            {{item.rates[displayedSelects[i]].value_buy !== null ? item.rates[displayedSelects[i]].value_buy : '---'}}
           </div>
           <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[selectedOption].value_sell}}
-          </div>
-        </div>
-      </div>
-      <div class="table-column" fxFlex="16" fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-md>
-        <div class="currency-value" fxFlex fxLayout="row" fxLayoutAlign=" center">
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[SecondSelectedOption].value_buy}}
-          </div>
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[SecondSelectedOption].value_sell}}
-          </div>
-        </div>
-      </div>
-      <div class="table-column" fxFlex="16" fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-md>
-        <div class="currency-value" fxFlex fxLayout="row" fxLayoutAlign=" center">
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[thirdSelectedOption].value_buy}}
-          </div>
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[thirdSelectedOption].value_sell}}
-          </div>
-        </div>
-      </div>
-      <div class="table-column" fxFlex="16" fxLayout="row" fxLayoutAlign="start center" fxHide fxShow.gt-md>
-        <div class="currency-value" fxFlex fxLayout="row" fxLayoutAlign=" center">
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[fourthSelectedOption].value_buy}}
-          </div>
-          <div fxLayout="row" fxLayoutAlign="center center" fxFlex="50">
-            {{item.rates[fourthSelectedOption].value_sell}}
+            {{item.rates[displayedSelects[i]].value_sell !== null ? item.rates[displayedSelects[i]].value_sell : '---'}}
           </div>
         </div>
       </div>

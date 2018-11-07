@@ -19,7 +19,10 @@
 
     span:hover {
       color: #b53631;
+    }
 
+    span:focus {
+      outline: none;
     }
   }
 }
