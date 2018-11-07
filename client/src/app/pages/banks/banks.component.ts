@@ -4,8 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-banks',
   template:`
     <app-rate-table [api]="'bankRates'"></app-rate-table>
-  `,
-  styleUrls: ['./banks.component.scss']
+  `
 })
 export class BanksComponent implements OnInit {
 
