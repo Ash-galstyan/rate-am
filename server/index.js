@@ -26,7 +26,10 @@ app.get('/', function (req, res) {
 
 app.get('/api/bankRates', function (req, res) {
   let banks = {}, currency = {}, lastDate, finalResult = [];
-  con.query('SELECT * FROM rates', function (error, results, fields) {
+  let sqlDate = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
+    "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS bank_id," +
+    "institutions.is_bank AS is_bank FROM rates JOIN institutions ON rates.institutions_id = institutions.id WHERE is_bank = 1";
+  con.query(sqlDate, function (error, results, fields) {
     if (error) throw error;
     lastDate = results[results.length - 1].date;
     con.query('SELECT * FROM currency', function (error, results, fields) {
@@ -80,7 +83,11 @@ app.get('/api/bankAverageRates', function (req, res) {
   let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0)-24*60*60;
   let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0)-24*60*60;
   let currencyLength, banks = {}, currency = {}, lastDate, previousDayLastDate, finalResult = [], previousLastDateValues = [], previousDayRatesBuy =[], previousDayRatesSell =[];
-  con.query('SELECT * FROM rates', function (error, results, fields) {
+  let sqlDate = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
+    "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS bank_id," +
+    "institutions.is_bank AS is_bank FROM rates JOIN institutions ON rates.institutions_id" +
+    " = institutions.id WHERE is_bank = 1"
+  con.query(sqlDate, function (error, results, fields) {
     if (error) throw error;
     lastDate = results[results.length - 1].date;
     con.query('SELECT * FROM currency', function (error, results, fields) {
