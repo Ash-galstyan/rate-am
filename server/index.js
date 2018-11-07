@@ -59,7 +59,7 @@ app.get('/api/bankRates', function (req, res) {
             } else {
               const bank = {
                 bank_id: rate.bank_id,
-                bank_description: banks[rate.bank_id],
+                description: banks[rate.bank_id],
                 currency: [],
                 date: rate.date
               };
@@ -86,7 +86,7 @@ app.get('/api/bankAverageRates', function (req, res) {
   let sqlDate = "SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy," +
     "rates.date AS date, rates.currency_id AS currency_id, institutions.id AS bank_id," +
     "institutions.is_bank AS is_bank FROM rates JOIN institutions ON rates.institutions_id" +
-    " = institutions.id WHERE is_bank = 1"
+    " = institutions.id WHERE is_bank = 1";
   con.query(sqlDate, function (error, results, fields) {
     if (error) throw error;
     lastDate = results[results.length - 1].date;
@@ -248,7 +248,7 @@ app.get('/api/exchangesPointsRates', function (req, res) {
             } else {
               const exchanges_point = {
                 exchangesPoint_id: rate.exchangesPoint_id,
-                exchangePoint_description: exchanges_points[rate.exchangesPoint_id],
+                description: exchanges_points[rate.exchangesPoint_id],
                 currency: [],
                 date: rate.date
               };
@@ -303,7 +303,7 @@ app.get('/api/creditOrganizationsRates', function (req, res) {
             } else {
               const credit_organization = {
                 creditOrganization_id: rate.creditOrganization_id,
-                creditOrganization_description: credit_organizations[rate.creditOrganization_id],
+                description: credit_organizations[rate.creditOrganization_id],
                 currency: [],
                 date: rate.date
               };
@@ -358,7 +358,7 @@ app.get('/api/investmentOrganizationsRates', function (req, res) {
             } else {
               const investment_organization = {
                 investmentOrganization_id: rate.investmentOrganization_id,
-                investmentOrganization_description: investment_organizations[rate.investmentOrganization_id],
+                description: investment_organizations[rate.investmentOrganization_id],
                 currency: [],
                 date: rate.date
               };
