@@ -378,6 +378,35 @@ app.get('/api/investmentOrganizationsRates', function (req, res) {
   });
 });
 
+app.get('/api/cbRates', function (req, res) {
+  let investment_organizations = {}, currency = {}, lastDate, finalResult = [];
+        let sql = "SELECT * FROM cb_rates";
+        con.query(sql, function (error, results, fields) {
+          if (error) throw error;
+          results.forEach(cb_rates => {
+            const cbRate = finalResult.find(o => cb_rates.currency_id === o.currency_id);
+            if (cbRate) {
+              cbRate.values.push({
+                date: `${cb_rates.date}`.slice(0,10),
+                value: cb_rates.value
+              });
+            } else {
+              const cbRate = {
+                currency_id: cb_rates.currency_id,
+                currency_description: 'USD',
+                values: []
+              };
+              finalResult.push(cbRate);
+              cbRate.values.push({
+                date: `${cb_rates.date}`.slice(0,10),
+                value: cb_rates.value
+              });
+            }
+          });
+          res.send(finalResult)
+        });
+});
+
 
 app.listen(80, function () {
   console.log('Node app is running');
