@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { HttpClient } from '@angular/common/http';
+import { UiStateService } from '../../../services/ui-state.service';
 import * as _ from 'lodash'
 
 @Component({
@@ -11,19 +12,23 @@ import * as _ from 'lodash'
 export class RateTableComponent implements OnInit {
   @Input() api: string;
 
-  date: any = Date.now();
-  selectedOption: string = 'USD';
-  SecondSelectedOption: string = 'EUR';
-  thirdSelectedOption: string = 'RUR';
-  fourthSelectedOption: string = 'GBP';
   data: any;
   currencyOptions: Array<any> = [];
+  displayedSelects: Array<any> = [];
 
   constructor (
     private http: HttpClient,
-    private banksService: ApiService) { }
+    private banksService: ApiService,
+    private uiStateService: UiStateService) { }
 
   ngOnInit() {
+    this.getData();
+    setInterval(() => {
+      this.getData();
+    },  5* 60 * 1000);
+  }
+
+  getData() {
     this.banksService.getData('http://54.86.92.122/api/' + this.api).subscribe(resp => {
       this.data = resp;
       this.data.forEach(o => {
@@ -32,6 +37,11 @@ export class RateTableComponent implements OnInit {
           o.rates[c.currency_Description] = c;
           this.currencyOptions.push(c.currency_Description);
           this.currencyOptions = _.uniq(this.currencyOptions);
+          if (this.uiStateService.isDesktop()) {
+            this.displayedSelects = this.currencyOptions.slice(0,4)
+          } else {
+            this.displayedSelects = this.currencyOptions.slice(0,1)
+          }
         });
       })
     });
