@@ -57,7 +57,7 @@
 </div>
 
 
-<div class="table-container" *ngIf="data && averageRates">
+<div class="table-container" *ngIf="hasAverageTable && data && averageRates">
   <div class="average-table-body" fxLayout="row" fxLayoutAlign="start none">
     <div class="table-row label-style" fxFlex fxLayout="column" fxLayoutAlign="center start">
       <p>Minimum</p>
@@ -76,13 +76,19 @@
           <p>{{averageRates[displayedSelects[i]]?.buy?.min}}</p>
           <p>{{averageRates[displayedSelects[i]]?.buy?.max}}</p>
           <p>{{averageRates[displayedSelects[i]]?.buy?.average}}</p>
-          <p>{{averageRates[displayedSelects[i]]?.buy?.fluctuation}}</p>
+          <p [ngStyle]="{'color':averageRates[displayedSelects[i]]?.buy?.fluctuation >= 0 ? 'green' : '#b53631'}">
+            <span *ngIf="averageRates[displayedSelects[i]]?.buy?.fluctuation > 0">+</span>
+            <span>{{averageRates[displayedSelects[i]]?.buy?.fluctuation}}</span>
+          </p>
         </div>
         <div fxLayout="column" fxLayoutAlign="center center" fxFlex="50">
           <p>{{averageRates[displayedSelects[i]]?.sell?.min}}</p>
           <p>{{averageRates[displayedSelects[i]]?.sell?.max}}</p>
           <p>{{averageRates[displayedSelects[i]]?.sell?.average}}</p>
-          <p>{{averageRates[displayedSelects[i]]?.sell?.fluctuation}}</p>
+          <p [ngStyle]="{'color':averageRates[displayedSelects[i]]?.buy?.fluctuation >= 0 ? 'green' : '#b53631'}">
+            <span *ngIf="averageRates[displayedSelects[i]]?.sell?.fluctuation > 0">+</span>
+            <span>{{averageRates[displayedSelects[i]]?.sell?.fluctuation}}</span>
+          </p>
         </div>
       </div>
     </div>

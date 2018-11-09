@@ -12,6 +12,7 @@ import * as _ from 'lodash'
 export class RateTableComponent implements OnInit {
   @Input() api: string;
   @Input() averageRatesApi: string;
+  @Input() hasAverageTable: boolean = false;
 
   data: any;
   averageRatesData: Array<any> = [];
