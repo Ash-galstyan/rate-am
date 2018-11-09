@@ -11,14 +11,17 @@ import * as _ from 'lodash'
 })
 export class RateTableComponent implements OnInit {
   @Input() api: string;
+  @Input() averageRatesApi: string;
 
   data: any;
+  averageRatesData: Array<any> = [];
   currencyOptions: Array<any> = [];
   displayedSelects: Array<any> = [];
+  averageRates = {};
 
   constructor (
     private http: HttpClient,
-    private banksService: ApiService,
+    private apiService: ApiService,
     private uiStateService: UiStateService) { }
 
   ngOnInit() {
@@ -28,8 +31,10 @@ export class RateTableComponent implements OnInit {
     },  5* 60 * 1000);
   }
 
+
+
   getData() {
-    this.banksService.getData('http://54.86.92.122/api/' + this.api).subscribe(resp => {
+    this.apiService.getData('http://54.86.92.122/api/' + this.api).subscribe(resp => {
       this.data = resp;
       this.data.forEach(o => {
         o.rates = {};
@@ -45,5 +50,13 @@ export class RateTableComponent implements OnInit {
         });
       })
     });
+    if (this.averageRatesApi) {
+      this.apiService.getData('http://54.86.92.122/api/' + this.averageRatesApi).subscribe( data => {
+        this.averageRatesData = data;
+        data.forEach(o => {
+          this.averageRates[o.currency_description] = o;
+        })
+      })
+    }
   }
 }

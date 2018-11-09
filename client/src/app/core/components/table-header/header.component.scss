@@ -1,16 +1,10 @@
 .top-bar {
   margin-top: 25px;
 
-  .dollar-icon {
-    font-size: 55px;
-    transform: rotate(-20deg);
-    color: #b53631;
-    -webkit-transition: 400ms; /* Safari */
-    transition: 400ms;
-  }
-
-  .logo:hover .dollar-icon {
-    transform: rotate(0deg);
+  .logo img {
+    background: #fff;
+    max-width: 40%;
+    width: 100%;
   }
 
   h4 {

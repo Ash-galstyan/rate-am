@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
     <div class="top-bar" fxLayout="row" fxLayoutAlign="space-between center">
       <div class="logo">
         <a [routerLink]="['/banks']">
-          <i class="fas fa-dollar-sign dollar-icon"></i>
+          <img src="../../../../assets/img/logo.png" >
+          <!--<i class="fas fa-dollar-sign dollar-icon"></i>-->
         </a>
       </div>
       <div>
