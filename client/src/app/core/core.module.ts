@@ -18,7 +18,7 @@ import { NavigationMenuComponent } from './components/navigation-menu/navigation
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { HeaderComponent } from './components/table-header/header.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { DataSearchComponent } from './data-search/data-search.component';
+import { DataSearchComponent } from './components/data-search/data-search.component';
 import { RateTableComponent } from './components/rate-table/rate-table.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
