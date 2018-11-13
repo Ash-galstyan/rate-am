@@ -183,9 +183,9 @@ app.get('/api/bankAverageRates', function (req, res) {
                 ratesCountSell[i] = 0;
                 for (let j = 0; j < finalResult[i].buy.length; j++) {
                   maxBuy[i] = maxBuy[i] > finalResult[i].buy[j] ? maxBuy[i] : finalResult[i].buy[j];
-                  minBuy[i] = minBuy[i] != null && minBuy[i] < finalResult[i].buy[j] ? minBuy[i] : finalResult[i].buy[j];
+                  minBuy[i] = finalResult[i].buy[j] == null || minBuy[i] < finalResult[i].buy[j] ? minBuy[i] : finalResult[i].buy[j];
                   maxSell[i] = maxSell[i] > finalResult[i].sell[j] ? maxSell[i] : finalResult[i].sell[j];
-                  minSell[i] = minSell[i] != null && minSell[i] < finalResult[i].sell[j] ? minSell[i] : finalResult[i].sell[j];
+                  minSell[i] = finalResult[i].sell[j] == null || minSell[i] < finalResult[i].sell[j] ? minSell[i] : finalResult[i].sell[j];
                   averageBuy[i] += finalResult[i].buy[j];
                   averageSell[i] += finalResult[i].sell[j];
                   ratesCountBuy[i] += !finalResult[i].buy[j] ? 0 : 1;
@@ -379,35 +379,106 @@ app.get('/api/investmentOrganizationsRates', function (req, res) {
 });
 
 app.get('/api/cbRates', function (req, res) {
-  let currency = [], finalResult = [];
+  let currency = [], currencyId = [], finalResult = [];
   con.query('SELECT * FROM currency', function (error, results, fields) {
     if (error) throw error;
     results.map(res => {
       currency[res.id] = res.name;
+      currencyId.push(res.id)
     });
     let sql = "SELECT * FROM cb_rates";
     con.query(sql, function (error, results, fields) {
       if (error) throw error;
-      results.forEach(cb_rates => {
-        const cbRate = finalResult.find(o => cb_rates.currency_id === o.currency_id);
-        if (cbRate) {
-          cbRate.values.push({
-            date: `${cb_rates.date}`.slice(0, 10),
-            value: cb_rates.value
-          });
-        } else {
-          const cbRate = {
-            currency_id: cb_rates.currency_id,
-            currency_description: currency[cb_rates.currency_id],
-            values: []
-          };
-          finalResult.push(cbRate);
-          cbRate.values.push({
-            date: `${cb_rates.date}`.slice(0, 10),
-            value: cb_rates.value
-          });
+      for(let i=0; i<currencyId.length; i++) {
+        let j=0;
+        finalResult.push({
+          currency_id: currencyId[i],
+          currency_description: currency[currencyId[i]],
+          values: []
+        });
+        for(let k=0; k<12; k++) {
+          finalResult[i].values.push([]);
+          for(j; j<results.length; j++) {
+            if(results[j].currency_id === currencyId[i] && j+1<results.length && `${results[j].date}`.slice(0, 10).slice(4, 7) === `${results[`${j+1}`].date}`.slice(0, 10).slice(4, 7)) {
+              finalResult[i].values[k].push({
+                date: `${results[j].date}`.slice(0, 10),
+                value: results[j].value
+              })
+            } else if (results[j].currency_id === currencyId[i]) {
+              finalResult[i].values[k].push({
+                date: `${results[j].date}`.slice(0, 10),
+                value: results[j].value
+              });
+              j++;
+              break;
+            }
+          }
         }
-      });
+      }
+      res.send(finalResult)
+    });
+  })
+});
+
+app.get('/api/cbAverageRates', function (req, res) {
+  let currency = [], currencyId = [], finalResult = [];
+  con.query('SELECT * FROM currency', function (error, results, fields) {
+    if (error) throw error;
+    results.map(res => {
+      currency[res.id] = res.name;
+      currencyId.push(res.id)
+    });
+    let sql = "SELECT * FROM cb_rates";
+    con.query(sql, function (error, results, fields) {
+      if (error) throw error;
+      let maxRate = [], minRate = [], averageRate = [], ratesfluctuation = [], ratesCount = [];
+      for(let i=0; i<currencyId.length; i++) {
+        let j=0;
+        finalResult.push({
+          currency_id: currencyId[i],
+          currency_description: currency[currencyId[i]],
+          values: []
+        });
+        for(let k=0; k<12; k++) {
+          finalResult[i].values.push([]);
+          for(j; j<results.length; j++) {
+            if(results[j].currency_id === currencyId[i] && j+1<results.length && `${results[j].date}`.slice(0, 10).slice(4, 7) === `${results[`${j+1}`].date}`.slice(0, 10).slice(4, 7)) {
+                finalResult[i].values[k].push({
+                  date: `${results[j].date}`.slice(0, 10),
+                  value: results[j].value
+                })
+              } else if (results[j].currency_id === currencyId[i]) {
+              finalResult[i].values[k].push({
+                date: `${results[j].date}`.slice(0, 10),
+                value: results[j].value
+              });
+              j++;
+              break;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < finalResult.length; i++) {
+        for (let j = 0; j < finalResult[i].values.length; j++) {
+          maxRate[j] = 0;
+          minRate[j] = 9999999;
+          averageRate[j] = 0;
+          ratesfluctuation[j] = 0;
+          ratesCount[j] = 0;
+         for(let k =0; k<finalResult[i].values[j].length; k++) {
+           maxRate[j] = maxRate[j] > finalResult[i].values[j][k].value ? maxRate[j] : finalResult[i].values[j][k].value;
+           minRate[j] = finalResult[i].values[j][k].value == null || finalResult[i].values[j][k].value === 0 || minRate[j] < finalResult[i].values[j][k].value ? minRate[j] : finalResult[i].values[j][k].value;
+           averageRate[j] += finalResult[i].values[j][k].value;
+           ratesCount[j] += !finalResult[i].values[j][k].value || !finalResult[i].values[j][k].value === 0 ? 0 : 1;
+         }
+          finalResult[i].values[j] = {
+            max: ratesCount[j] ? maxRate[j] : null,
+            min: ratesCount[j] ? minRate[j] : null,
+            average: ratesCount[j] ? (averageRate[j] / ratesCount[j]).toFixed(2) : null,
+            fluctuation: averageRate[j-1] && averageRate[j] ? ((averageRate[j] / ratesCount[j]) - (averageRate[j-1] / ratesCount[j-1])).toFixed(2) : null
+          };
+        }
+      }
       res.send(finalResult)
     });
   })
