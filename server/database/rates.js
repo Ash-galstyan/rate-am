@@ -20,33 +20,10 @@ let currencyName = [];
 
 con.connect(function (err) {
   if (err) throw err;
-  con.query("SELECT * FROM institutions WHERE is_bank = 1", function (err, result, fields) {
-    if (err) throw err;
-    result.forEach(res => {
-      bankId.push(res.id)
-    });
-  });
+});
 
-  con.query("SELECT * FROM institutions WHERE is_exchanges_points = 1", function (err, result, fields) {
-    if (err) throw err;
-    result.forEach(res => {
-      exchangesId.push(res.id)
-    });
-  });
-
-  con.query("SELECT * FROM institutions WHERE is_credit_organizations = 1", function (err, result, fields) {
-    if (err) throw err;
-    result.forEach(res => {
-      creditId.push(res.id)
-    });
-  });
-
-  con.query("SELECT * FROM institutions WHERE is_investment_organizations = 1", function (err, result, fields) {
-    if (err) throw err;
-    result.forEach(res => {
-      investmentId.push(res.id)
-    });
-  });
+function setRates(url, institution_type) {
+  let institutionId = [];
 
   con.query("SELECT * FROM currency", function (err, result, fields) {
     if (err) throw err;
@@ -55,51 +32,61 @@ con.connect(function (err) {
       currencyName.push(res.name)
     });
   });
-});
 
-cron.schedule("14,29,44,59 * * * *", function () {
-  request('https://rate.am', function (error, response, html) {
-    if (!error && response.statusCode === 200) {
-      let $ = cheerio.load(html);
-      let trs = $('table#rb tr');
-      let currencyUSDBuy = [];
-      let currencyUSDSell = [];
-      let currencyEURBuy = [];
-      let currencyEURSell = [];
-      let currencyRURBuy = [];
-      let currencyRURSell = [];
-      let currencyGBPBuy = [];
-      let currencyGBPSell = [];
-      let currencyBuy = {};
-      let currencySell = {};
-      let rates = [];
-      let date = new Date();
+  con.query(`SELECT * FROM institutions WHERE institution_type = '${institution_type}'`, function (err, result, fields) {
+    if (err) throw err;
+    result.forEach(res => {
+      institutionId.push(res.id)
+    });
+  });
 
-      trs.find('td.bank a').each(function (i, e) {
-        let value = $(this).parent().parent().find('td.date').next();
-        currencyUSDBuy[i] = value.text() !== '' ? parseFloat(`${value.text()}`) : null;
-        currencyUSDSell[i] = value.next().text() !== '' ? parseFloat(`${value.next().text()}`) : null;
-        currencyEURBuy[i] = value.next().next().text() !== '' ? parseFloat(`${value.next().next().text()}`) : null;
-        currencyEURSell[i] = value.next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().text()}`) : null;
-        currencyRURBuy[i] = value.next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().text()}`) : null;
-        currencyRURSell[i] = value.next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().text()}`) : null;
-        currencyGBPBuy[i] = value.next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().text()}`) : null;
-        currencyGBPSell[i] = value.next().next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().next().text()}`) : null;
-      });
-      currencyBuy['USD'] = currencyUSDBuy;
-      currencyBuy['EUR'] = currencyEURBuy;
-      currencyBuy['RUR'] = currencyRURBuy;
-      currencyBuy['GBP'] = currencyGBPBuy;
-      currencySell['USD'] = currencyUSDSell;
-      currencySell['EUR'] = currencyEURSell;
-      currencySell['RUR'] = currencyRURSell;
-      currencySell['GBP'] = currencyGBPSell;
+  cron.schedule("14,29,44,59 * * * *", function () {
+    request({
+      url: url,
+      headers: {
+        Cookie: "Cookie.CurrencyList=1 USD,1 EUR,1 RUR,1 GBP;"
+      }
+    }, function (error, response, html) {
+      if (!error && response.statusCode === 200) {
+        let $ = cheerio.load(html);
+        let trs = $('table#rb tr');
+        let currencyUSDBuy = [];
+        let currencyUSDSell = [];
+        let currencyEURBuy = [];
+        let currencyEURSell = [];
+        let currencyRURBuy = [];
+        let currencyRURSell = [];
+        let currencyGBPBuy = [];
+        let currencyGBPSell = [];
+        let currencyBuy = {};
+        let currencySell = {};
+        let rates = [];
+        let date = new Date();
+
+        trs.find('td.bank a').each(function (i, e) {
+          let value = $(this).parent().parent().find('td.date').next();
+          currencyUSDBuy[i] = value.text() !== '' ? parseFloat(`${value.text()}`) : null;
+          currencyUSDSell[i] = value.next().text() !== '' ? parseFloat(`${value.next().text()}`) : null;
+          currencyEURBuy[i] = value.next().next().text() !== '' ? parseFloat(`${value.next().next().text()}`) : null;
+          currencyEURSell[i] = value.next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().text()}`) : null;
+          currencyRURBuy[i] = value.next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().text()}`) : null;
+          currencyRURSell[i] = value.next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().text()}`) : null;
+          currencyGBPBuy[i] = value.next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().text()}`) : null;
+          currencyGBPSell[i] = value.next().next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().next().text()}`) : null;
+        });
+        currencyBuy['USD'] = currencyUSDBuy;
+        currencyBuy['EUR'] = currencyEURBuy;
+        currencyBuy['RUR'] = currencyRURBuy;
+        currencyBuy['GBP'] = currencyGBPBuy;
+        currencySell['USD'] = currencyUSDSell;
+        currencySell['EUR'] = currencyEURSell;
+        currencySell['RUR'] = currencyRURSell;
+        currencySell['GBP'] = currencyGBPSell;
 
 
-
-        for (let i = 0; i < bankId.length; i++) {
+        for (let i = 0; i < institutionId.length; i++) {
           for (let j = 0; j < currencyName.length; j++) {
-            rates.push([bankId[i], currencyBuy[currencyName[j]][i], currencySell[currencyName[j]][i], date.getTime()/1000, currencyId[j]]);
+            rates.push([institutionId[i], currencyBuy[currencyName[j]][i], currencySell[currencyName[j]][i], date.getTime() / 1000, currencyId[j]]);
           }
         }
         let sql = `INSERT INTO rates (institutions_id, value_buy, value_sell, date, currency_id) VALUES?`;
@@ -107,180 +94,15 @@ cron.schedule("14,29,44,59 * * * *", function () {
           if (err) throw err;
           console.log("successfully inserted");
         });
-    }
-  });
-
-  request({
-    url: 'http://rate.am/am/armenian-dram-exchange-rates/exchange-points/cash?tp=1&rt=0&rt=0&ext=2',
-    headers: {
-      Cookie: "Cookie.CurrencyList=1 USD,1 EUR,1 RUR,1 GBP;"
-    }
-  }, function (error, response, html) {
-    if (!error && response.statusCode === 200) {
-      let $ = cheerio.load(html);
-      let trs = $('table#rb tr');
-      let currencyUSDBuy = [];
-      let currencyUSDSell = [];
-      let currencyEURBuy = [];
-      let currencyEURSell = [];
-      let currencyRURBuy = [];
-      let currencyRURSell = [];
-      let currencyGBPBuy = [];
-      let currencyGBPSell = [];
-      let currencyBuy = {};
-      let currencySell = {};
-      let rates = [];
-      let date = new Date();
-
-      trs.find('td.bank a').each(function (i, e) {
-        let value = $(this).parent().parent().find('td.date').next();
-        currencyUSDBuy[i] = value.text() !== '' ? parseFloat(`${value.text()}`) : null;
-        currencyUSDSell[i] = value.next().text() !== '' ? parseFloat(`${value.next().text()}`) : null;
-        currencyEURBuy[i] = value.next().next().text() !== '' ? parseFloat(`${value.next().next().text()}`) : null;
-        currencyEURSell[i] = value.next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().text()}`) : null;
-        currencyRURBuy[i] = value.next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().text()}`) : null;
-        currencyRURSell[i] = value.next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().text()}`) : null;
-        currencyGBPBuy[i] = value.next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().text()}`) : null;
-        currencyGBPSell[i] = value.next().next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().next().text()}`) : null;
-      });
-      currencyBuy['USD'] = currencyUSDBuy;
-      currencyBuy['EUR'] = currencyEURBuy;
-      currencyBuy['RUR'] = currencyRURBuy;
-      currencyBuy['GBP'] = currencyGBPBuy;
-      currencySell['USD'] = currencyUSDSell;
-      currencySell['EUR'] = currencyEURSell;
-      currencySell['RUR'] = currencyRURSell;
-      currencySell['GBP'] = currencyGBPSell;
-
-
-
-      for (let i = 0; i < exchangesId.length; i++) {
-        for (let j = 0; j < currencyName.length; j++) {
-          rates.push([exchangesId[i], currencyBuy[currencyName[j]][i], currencySell[currencyName[j]][i], date.getTime()/1000, currencyId[j]]);
-        }
       }
-      let sql = `INSERT INTO rates (institutions_id, value_buy, value_sell, date, currency_id) VALUES?`;
-      con.query(sql, [rates], function (err, result) {
-        if (err) throw err;
-        console.log("successfully inserted");
-      });
-    }
+    });
   });
+}
 
-  request({
-    url: 'http://rate.am/am/armenian-dram-exchange-rates/credit-organizations/cash',
-    headers: {
-      Cookie: "Cookie.CurrencyList=1 USD,1 EUR,1 RUR,1 GBP;"
-    }
-  }, function (error, response, html) {
-    if (!error && response.statusCode === 200) {
-      let $ = cheerio.load(html);
-      let trs = $('table#rb tr');
-      let currencyUSDBuy = [];
-      let currencyUSDSell = [];
-      let currencyEURBuy = [];
-      let currencyEURSell = [];
-      let currencyRURBuy = [];
-      let currencyRURSell = [];
-      let currencyGBPBuy = [];
-      let currencyGBPSell = [];
-      let currencyBuy = {};
-      let currencySell = {};
-      let rates = [];
-      let date = new Date();
-
-      trs.find('td.bank a').each(function (i, e) {
-        let value = $(this).parent().parent().find('td.date').next();
-        currencyUSDBuy[i] = value.text() !== '' ? parseFloat(`${value.text()}`) : null;
-        currencyUSDSell[i] = value.next().text() !== '' ? parseFloat(`${value.next().text()}`) : null;
-        currencyEURBuy[i] = value.next().next().text() !== '' ? parseFloat(`${value.next().next().text()}`) : null;
-        currencyEURSell[i] = value.next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().text()}`) : null;
-        currencyRURBuy[i] = value.next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().text()}`) : null;
-        currencyRURSell[i] = value.next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().text()}`) : null;
-        currencyGBPBuy[i] = value.next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().text()}`) : null;
-        currencyGBPSell[i] = value.next().next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().next().text()}`) : null;
-      });
-      currencyBuy['USD'] = currencyUSDBuy;
-      currencyBuy['EUR'] = currencyEURBuy;
-      currencyBuy['RUR'] = currencyRURBuy;
-      currencyBuy['GBP'] = currencyGBPBuy;
-      currencySell['USD'] = currencyUSDSell;
-      currencySell['EUR'] = currencyEURSell;
-      currencySell['RUR'] = currencyRURSell;
-      currencySell['GBP'] = currencyGBPSell;
-
-
-
-      for (let i = 0; i < creditId.length; i++) {
-        for (let j = 0; j < currencyName.length; j++) {
-          rates.push([creditId[i], currencyBuy[currencyName[j]][i], currencySell[currencyName[j]][i], date.getTime()/1000, currencyId[j]]);
-        }
-      }
-      let sql = `INSERT INTO rates (institutions_id, value_buy, value_sell, date, currency_id) VALUES?`;
-      con.query(sql, [rates], function (err, result) {
-        if (err) throw err;
-        console.log("successfully inserted");
-      });
-    }
-  });
-
-  request({
-    url: 'http://rate.am/en/armenian-dram-exchange-rates/investment-organizations/non-cash',
-    headers: {
-      Cookie: "Cookie.CurrencyList=1 USD,1 EUR,1 RUR,1 GBP;"
-    }
-  }, function (error, response, html) {
-    if (!error && response.statusCode === 200) {
-      let $ = cheerio.load(html);
-      let trs = $('table#rb tr');
-      let currencyUSDBuy = [];
-      let currencyUSDSell = [];
-      let currencyEURBuy = [];
-      let currencyEURSell = [];
-      let currencyRURBuy = [];
-      let currencyRURSell = [];
-      let currencyGBPBuy = [];
-      let currencyGBPSell = [];
-      let currencyBuy = {};
-      let currencySell = {};
-      let rates = [];
-      let date = new Date();
-
-      trs.find('td.bank a').each(function (i, e) {
-        let value = $(this).parent().parent().find('td.date').next();
-        currencyUSDBuy[i] = value.text() !== '' ? parseFloat(`${value.text()}`) : null;
-        currencyUSDSell[i] = value.next().text() !== '' ? parseFloat(`${value.next().text()}`) : null;
-        currencyEURBuy[i] = value.next().next().text() !== '' ? parseFloat(`${value.next().next().text()}`) : null;
-        currencyEURSell[i] = value.next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().text()}`) : null;
-        currencyRURBuy[i] = value.next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().text()}`) : null;
-        currencyRURSell[i] = value.next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().text()}`) : null;
-        currencyGBPBuy[i] = value.next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().text()}`) : null;
-        currencyGBPSell[i] = value.next().next().next().next().next().next().next().text() !== '' ? parseFloat(`${value.next().next().next().next().next().next().next().text()}`) : null;
-      });
-      currencyBuy['USD'] = currencyUSDBuy;
-      currencyBuy['EUR'] = currencyEURBuy;
-      currencyBuy['RUR'] = currencyRURBuy;
-      currencyBuy['GBP'] = currencyGBPBuy;
-      currencySell['USD'] = currencyUSDSell;
-      currencySell['EUR'] = currencyEURSell;
-      currencySell['RUR'] = currencyRURSell;
-      currencySell['GBP'] = currencyGBPSell;
-
-
-
-      for (let i = 0; i < investmentId.length; i++) {
-        for (let j = 0; j < currencyName.length; j++) {
-          rates.push([investmentId[i], currencyBuy[currencyName[j]][i], currencySell[currencyName[j]][i], date.getTime()/1000, currencyId[j]]);
-        }
-      }
-      let sql = `INSERT INTO rates (institutions_id, value_buy, value_sell, date, currency_id) VALUES?`;
-      con.query(sql, [rates], function (err, result) {
-        if (err) throw err;
-        console.log("successfully inserted");
-      });
-    }
-  });
-});
+setRates('https://rate.am', 'banks');
+setRates('http://rate.am/am/armenian-dram-exchange-rates/exchange-points/cash', 'exchangesPoints');
+setRates('http://rate.am/am/armenian-dram-exchange-rates/credit-organizations/cash', 'creditOrganizations');
+setRates('http://rate.am/en/armenian-dram-exchange-rates/investment-organizations/non-cash', 'investmentOrganizations');
 
 
 

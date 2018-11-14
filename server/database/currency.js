@@ -12,7 +12,6 @@ const con = mysql.createConnection({
 request('https://rate.am', function (error, response, html) {
   if (!error && response.statusCode === 200) {
     let currencyName = [['USD'], ['EUR'], ['RUR'], ['GBP']];
-
     con.connect(function (err) {
       if (err) throw err;
         console.log("Connected!");

@@ -15,97 +15,34 @@ con.connect(function (err) {
   console.log("Connected!");
 });
 
-request('http://rate.am/en/armenian-dram-exchange-rates/investment-organizations/non-cash', function (error, response, html) {
-  if (!error && response.statusCode === 200) {
-    let $ = cheerio.load(html);
-    let trs = $('table#rb tr');
-    let investment_organizations = [];
-    let institutions = [];
+function setInstitutions(url, institution_type) {
+  request(url, function (error, response, html) {
+    if (!error && response.statusCode === 200) {
+      let $ = cheerio.load(html);
+      let trs = $('table#rb tr');
+      let institution = [];
+      let institutions = [];
 
-    trs.find('td.bank a').each(function (i, e) {
-      investment_organizations[i] = $(this).text().trim();
-    });
+      trs.find('td.bank a').each(function (i, e) {
+        institution[i] = $(this).text().trim();
+      });
 
-    investment_organizations.forEach(investment_organization =>{
-      institutions.push([investment_organization, false, false, false, true])
-    });
+      institution.forEach(i =>{
+        institutions.push([i, institution_type])
+      });
 
-    let sql = `INSERT INTO institutions (name, is_bank, is_exchanges_points, is_credit_organizations, is_investment_organizations) VALUES ?`;
-    con.query(sql, [institutions], function (err, result) {
-      if (err) throw err;
-      console.log("successfully inserted");
-    });
-  }
-});
-
-request('http://rate.am/am/armenian-dram-exchange-rates/credit-organizations/cash', function (error, response, html) {
-  if (!error && response.statusCode === 200) {
-    let $ = cheerio.load(html);
-    let trs = $('table#rb tr');
-    let credit_organizations = [];
-    let institutions = [];
-
-    trs.find('td.bank a').each(function (i, e) {
-      credit_organizations[i] = $(this).text().trim();
-    });
-
-    credit_organizations.forEach(credit_organization =>{
-      institutions.push([credit_organization, false, false, true, false])
-    });
-
-    let sql = `INSERT INTO institutions (name, is_bank, is_exchanges_points, is_credit_organizations, is_investment_organizations) VALUES ?`;
-    con.query(sql, [institutions], function (err, result) {
-      if (err) throw err;
-      console.log("successfully inserted");
-    });
-  }
-});
-
-request('https://rate.am/am/armenian-dram-exchange-rates/exchange-points/cash', function (error, response, html) {
-  if (!error && response.statusCode === 200) {
-    let $ = cheerio.load(html);
-    let trs = $('table#rb tr');
-    let exchanges_points = [];
-    let institutions = [];
-
-    trs.find('td.bank a').each(function (i, e) {
-      exchanges_points[i] = $(this).text().trim();
-    });
-
-    exchanges_points.forEach(exchanges_point =>{
-      institutions.push([exchanges_point, false, true, false, false])
-    });
-
-    let sql = `INSERT INTO institutions (name, is_bank, is_exchanges_points, is_credit_organizations, is_investment_organizations) VALUES ?`;
-    con.query(sql, [institutions], function (err, result) {
-      if (err) throw err;
-      console.log("successfully inserted");
-    });
-  }
-});
-
-request('https://rate.am', function (error, response, html) {
-  if (!error && response.statusCode === 200) {
-    let $ = cheerio.load(html);
-    let trs = $('table#rb tr');
-    let bank = [];
-    let institutions = [];
-
-    trs.find('td.bank a').each(function (i, e) {
-      bank[i] = $(this).text().trim();
-    });
-
-    bank.forEach(bank =>{
-      institutions.push([bank, true, false, false, false])
-    });
-
-    let sql = `INSERT INTO institutions (name, is_bank, is_exchanges_points, is_credit_organizations, is_investment_organizations) VALUES ?`;
-    con.query(sql, [institutions], function (err, result) {
-      if (err) throw err;
-      console.log("successfully inserted");
-    });
-  }
-});
+      let sql = `INSERT INTO institutions (name, institution_type) VALUES ?`;
+      con.query(sql, [institutions], function (err, result) {
+        if (err) throw err;
+        console.log("successfully inserted");
+      });
+    }
+  });
+}
+setInstitutions('http://rate.am/en/armenian-dram-exchange-rates/investment-organizations/non-cash', 'investmentOrganizations');
+setInstitutions('http://rate.am/am/armenian-dram-exchange-rates/credit-organizations/cash', 'creditOrganizations');
+setInstitutions('https://rate.am/am/armenian-dram-exchange-rates/exchange-points/cash', 'exchangesPoints');
+setInstitutions('https://rate.am', 'banks');
 
 
 
