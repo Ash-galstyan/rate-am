@@ -15,6 +15,7 @@ const con = mysql.createConnection({
 let cbRates =[];
 let currency = [];
 let body = {};
+let cookie;
 
 con.connect(function (err) {
   if (err) throw err;
@@ -56,27 +57,27 @@ function bodyQuery(currencyDescription) {
   return body
 }
 
-function getCookies(callback){
-
-  request('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia',
-    function (error, response) {
-    if (!error && response.statusCode === 200) {
-      return callback(null, response.headers['set-cookie'][0]);
-    } else {
-      return callback(error);
-    }
+function getCookies(cookie){
+  return new Promise((resolve) => {
+    request('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia',
+      function (error, response) {
+        if (!error && response.statusCode === 200) {
+          return cookie = resolve(null, response.headers['set-cookie'][0]);
+        }
+      })
   })
 }
-cron.schedule("14,29,44,59 * * * *", function () {
+cron.schedule("1 * * * *", function () {
   let sql = "DELETE FROM cb_rates";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("records deleted");
   });
 
-  getCookies(function(err, cookie){
-    if(!err) {
+  getCookies(cookie)
+    .then(() => {
       function cb_values(currencyDescription) {
+        return new Promise((resolve) => {
         request.post('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia', {
             headers: {
               'content-type': 'application/x-www-form-urlencoded',
@@ -136,14 +137,18 @@ cron.schedule("14,29,44,59 * * * *", function () {
               });
               cbRates = [];
             }
+            resolve()
           });
+        })
       }
-    }
-    cb_values('USD');
-    cb_values('EUR');
-    cb_values('RUR');
-    cb_values('GBP');
-  });
+      async function allCbValues() {
+        await cb_values('USD');
+        await cb_values('EUR');
+        await cb_values('RUR');
+        await cb_values('GBP');
+      }
+      allCbValues()
+    })
 });
 
 
