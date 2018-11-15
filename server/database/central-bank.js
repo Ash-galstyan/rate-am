@@ -59,7 +59,7 @@ function bodyQuery(currencyDescription) {
 function getCookies(callback){
 
   request('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia',
-    function (error, response, body) {
+    function (error, response) {
     if (!error && response.statusCode === 200) {
       return callback(null, response.headers['set-cookie'][0]);
     } else {
