@@ -27,55 +27,64 @@ let sqlJoin = `SELECT rates.value_sell AS value_sell, rates.value_buy AS value_b
 function institutionsApi(url, institutionType) {
   app.get(url, function (req, res) {
     let institutions = {}, currency = {}, lastDate, finalResult = [];
-    let sqlDate = sqlJoin + ` WHERE institution_type = '${institutionType}'`;
-    con.query(sqlDate, function (error, results, fields) {
-      if (error) throw error;
-      lastDate = results[results.length - 1].date;
-      con.query('SELECT * FROM currency', function (error, results, fields) {
-        if (error) throw error;
-        results.map(res => {
-          currency[res.id] = res.name;
-        });
-        con.query(`SELECT * FROM institutions WHERE institution_type = '${institutionType}'`, function (error, results, fields) {
-          if (error) throw error;
-          results.map(res => {
-            institutions[res.id] = res.name;
-          });
-          let sql = sqlJoin + ` WHERE institution_type = '${institutionType}' AND date = ` + lastDate;
-          con.query(sql, function (error, results, fields) {
-            if (error) throw error;
-            results.forEach(rate => {
-              const institution = finalResult.find(o => rate.institution_id === o.institution_id);
-              if (institution) {
-                institution.currency.push({
-                  currency_id: rate.currency_id,
-                  currency_Description: currency[`${rate.currency_id}`],
-                  value_buy: rate.value_buy,
-                  value_sell: rate.value_sell
-                });
-              } else {
-                const institution = {
-                  institution_id: rate.institution_id,
-                  description: institutions[rate.institution_id],
-                  currency: [],
-                  date: rate.date
-                };
-                finalResult.push(institution);
-                institution.currency.push({
-                  currency_id: rate.currency_id,
-                  currency_Description: currency[rate.currency_id],
-                  value_buy: rate.value_buy,
-                  value_sell: rate.value_sell
-                })
-              }
-            });
-            res.send(finalResult)
-          });
+
+    function query(sql, args) {
+      return new Promise((resolve, reject) => {
+        con.query(sql, args, (err, rows) => {
+          if (err)
+            return reject(err);
+          resolve(rows);
         });
       });
-    });
-  });
+    }
+    query(sqlJoin + ` WHERE institution_type = '${institutionType}'`)
+      .then(rows => {
+        lastDate = rows[rows.length - 1].date;
+        return query('SELECT * FROM currency')
+      })
+      .then(rows => {
+        rows.map(res => {
+          currency[res.id] = res.name;
+        });
+        return query(`SELECT * FROM institutions WHERE institution_type = '${institutionType}'`)
+      })
+      .then(rows => {
+        rows.map(res => {
+          institutions[res.id] = res.name;
+        });
+        return query(sqlJoin + ` WHERE institution_type = '${institutionType}' AND date = ` + lastDate)
+      })
+      .then(rows => {
+        rows.forEach(rate => {
+          const institution = finalResult.find(o => rate.institution_id === o.institution_id);
+          if (institution) {
+            institution.currency.push({
+              currency_id: rate.currency_id,
+              currency_Description: currency[`${rate.currency_id}`],
+              value_buy: rate.value_buy,
+              value_sell: rate.value_sell
+            });
+          } else {
+            const institution = {
+              institution_id: rate.institution_id,
+              description: institutions[rate.institution_id],
+              currency: [],
+              date: rate.date
+            };
+            finalResult.push(institution);
+            institution.currency.push({
+              currency_id: rate.currency_id,
+              currency_Description: currency[rate.currency_id],
+              value_buy: rate.value_buy,
+              value_sell: rate.value_sell
+            })
+          }
+        });
+        res.send(finalResult);
+      });
+  })
 }
+
 institutionsApi('/api/bankRates', 'banks');
 institutionsApi('/api/exchangesPointsRates', 'exchangesPoints');
 institutionsApi('/api/creditOrganizationsRates', 'creditOrganizations');

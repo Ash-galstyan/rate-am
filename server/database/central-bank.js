@@ -15,7 +15,6 @@ const con = mysql.createConnection({
 let cbRates =[];
 let currency = [];
 let body = {};
-let cookie;
 
 con.connect(function (err) {
   if (err) throw err;
@@ -57,27 +56,26 @@ function bodyQuery(currencyDescription) {
   return body
 }
 
-function getCookies(cookie){
-  return new Promise((resolve) => {
+function getCookies(callback){
     request('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia',
       function (error, response) {
         if (!error && response.statusCode === 200) {
-          return cookie = resolve(null, response.headers['set-cookie'][0]);
+          return callback(null, response.headers['set-cookie'][0]);
+        } else {
+          return callback(error);
         }
       })
-  })
 }
-cron.schedule("1 * * * *", function () {
+cron.schedule("* * * * *", function () {
   let sql = "DELETE FROM cb_rates";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("records deleted");
   });
 
-  getCookies(cookie)
-    .then(() => {
+  getCookies(function(err, cookie){
+    if(!err) {
       function cb_values(currencyDescription) {
-        return new Promise((resolve) => {
         request.post('http://rate.am/en/armenian-dram-exchange-rates/central-bank-armenia', {
             headers: {
               'content-type': 'application/x-www-form-urlencoded',
@@ -101,14 +99,12 @@ cron.schedule("1 * * * *", function () {
                   values[i].push($(td).text().trim())
                 })
               });
-
               for (let i = 1; i < values.length; i++) {
                 for (let j = 1; j < values[i].length; j++) {
                   monthValue[j - 1] = monthValue[j - 1] ? monthValue[j - 1] : [];
                   monthValue[j - 1].push({[i]: values[i][j]})
                 }
               }
-
               for (let i = 0; i < monthValue.length; i++) {
                 for (let j = 0; j < monthValue[i].length; j++) {
                   let month = i + 1 < 10 ? `0${i + 1}` : `${i + 1}`;
@@ -125,11 +121,9 @@ cron.schedule("1 * * * *", function () {
                   }
                 }
               }
-
               for (let i = 0; i < cbValues.length; i++) {
                 cbRates.push([cbDate[i], cbValues[i], currency[currencyDescription]]);
               }
-
               let sql = `INSERT INTO cb_rates (date, value, currency_id) VALUES ?`;
               con.query(sql, [cbRates], function (err, result) {
                 if (err) throw err;
@@ -137,18 +131,14 @@ cron.schedule("1 * * * *", function () {
               });
               cbRates = [];
             }
-            resolve()
           });
-        })
       }
-      async function allCbValues() {
-        await cb_values('USD');
-        await cb_values('EUR');
-        await cb_values('RUR');
-        await cb_values('GBP');
-      }
-      allCbValues()
-    })
+    }
+    cb_values('USD');
+    cb_values('EUR');
+    cb_values('RUR');
+    cb_values('GBP');
+  });
 });
 
 
