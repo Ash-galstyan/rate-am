@@ -35,7 +35,7 @@ function setRates(url, institution_type) {
     });
   });
 
-  // cron.schedule("* * * * *", function () {
+  cron.schedule("14,29,44,59 * * * *", function () {
     request({
       url: url,
       headers: {
@@ -89,7 +89,7 @@ function setRates(url, institution_type) {
       }
     })
 
-  // })
+  })
 }
 function setAllRates() {
   setRates('https://rate.am', 'banks');

@@ -66,7 +66,7 @@ function getCookies(callback){
         }
       })
 }
-cron.schedule("* * * * *", function () {
+cron.schedule("1 * * * *", function () {
   let sql = "DELETE FROM cb_rates";
   con.query(sql, function (err, result) {
     if (err) throw err;
