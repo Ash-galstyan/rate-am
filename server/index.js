@@ -26,7 +26,7 @@ let sqlJoin = `SELECT rates.value_sell AS value_sell, rates.value_buy AS value_b
   `rates.date AS date, rates.currency_id AS currency_id, institutions.id AS institution_id,` +
   `institutions.institution_type AS institution_type FROM rates JOIN institutions ON rates.institutions_id = institutions.id`;
 
-app.get('*', (req,res) => {
+app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname, '../client/dist/rate-am/index.html'))
 });
 
@@ -97,123 +97,123 @@ institutionsApi('/api/exchangesPointsRates', 'exchangesPoints');
 institutionsApi('/api/creditOrganizationsRates', 'creditOrganizations');
 institutionsApi('/api/investmentOrganizationsRates', 'investmentOrganizations');
 
-app.get('/api/bankAverageRates', function (req, res) {
-  // let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0)-24*60*60;
-  // let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0)-24*60*60;
-  let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0);
-  let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0);
-  let currencyLength, banks = {}, currency = {}, lastDate, previousDayLastDate, finalResult = [], previousLastDateValues = [], previousDayRatesBuy =[], previousDayRatesSell =[];
-  let sqlDate = sqlJoin + ` WHERE institution_type = 'banks'`;
-  con.query(sqlDate, function (error, results, fields) {
-    if (error) throw error;
-    lastDate = results[results.length - 1].date;
-    con.query('SELECT * FROM currency', function (error, results, fields) {
-      if (error) throw error;
-      results.map(res => {
-        currency[res.id] = res.name;
-      });
-      currencyLength = results.length;
-        let sql = sqlJoin + ` WHERE institution_type = 'banks'` +
-          ` AND date BETWEEN ` + startPreviousDayDate + ` AND ` + endPreviousDayDate;
-        con.query(sql, function (error, results, fields) {
-          if (error) throw error;
-          previousDayLastDate = results[results.length - 1].date;
-          let sqlPreviousDayLastDate = sqlJoin + ` WHERE institution_type = 'banks' AND date = ` + previousDayLastDate;
-          con.query(sqlPreviousDayLastDate, function (error, results, fields) {
-            if (error) throw error;
-            let  previousDayAverageBuy = [], previousDayAverageSell = [],
-              previousDayRatesCountBuy = [], previousDayRatesCountSell = [];
-            results.forEach(rate => {
-              const curr = previousLastDateValues.find(o => rate.currency_id === o.currency_id);
-              if (curr) {
-                curr.buy.push(rate.value_buy);
-                curr.sell.push(rate.value_sell);
-              } else {
-                const curr = {
-                  buy: [],
-                  sell: []
-                };
-                previousLastDateValues.push(curr);
-                curr.buy.push(rate.value_buy);
-                curr.sell.push(rate.value_sell);
-              }
-            });
-            for (let i = 0; i < previousLastDateValues.length; i++) {
-              previousDayAverageBuy[i] = 0;
-              previousDayAverageSell[i] = 0;
-              previousDayRatesCountBuy[i] = 0;
-              previousDayRatesCountSell[i] = 0;
-              for (let j = 0; j < previousLastDateValues[i].buy.length; j++) {
-                previousDayAverageBuy[i] += previousLastDateValues[i].buy[j];
-                previousDayAverageSell[i] += previousLastDateValues[i].sell[j];
-                previousDayRatesCountBuy[i] += !previousLastDateValues[i].buy[j] ? 0 : 1;
-                previousDayRatesCountSell[i] += !previousLastDateValues[i].sell[j] ? 0 : 1
-              }
-              previousDayRatesBuy[i] = (previousDayAverageBuy[i] / previousDayRatesCountBuy[i]).toFixed(2);
-              previousDayRatesSell[i] = (previousDayAverageSell[i] / previousDayRatesCountSell[i]).toFixed(2)
-            }
-            let sqlLastDate = sqlJoin + ` WHERE institution_type = 'banks' AND date = ` + lastDate;
-            con.query(sqlLastDate, function (error, results, fields) {
-              if (error) throw error;
-              let maxBuy = [], maxSell = [], minBuy = [], minSell = [], averageBuy = [], averageSell = [],
-                ratesCountBuy = [], ratesCountSell = [];
-              results.forEach(rate => {
-                const cur = finalResult.find(o => rate.currency_id === o.currency_id);
-                if (cur) {
-                  cur.buy.push(rate.value_buy);
-                  cur.sell.push(rate.value_sell);
-                } else {
-                  const cur = {
-                    currency_id: rate.currency_id,
-                    currency_description: currency[rate.currency_id],
-                    buy: [],
-                    sell: [],
-                    date: rate.date
-                  };
-                  finalResult.push(cur);
-                  cur.buy.push(rate.value_buy);
-                  cur.sell.push(rate.value_sell);
-                }
-              });
-              for (let i = 0; i < finalResult.length; i++) {
-                maxBuy[i] = 0;
-                minBuy[i] = Infinity;
-                maxSell[i] = 0;
-                minSell[i] = Infinity;
-                averageBuy[i] = 0;
-                averageSell[i] = 0;
-                ratesCountBuy[i] = 0;
-                ratesCountSell[i] = 0;
-                for (let j = 0; j < finalResult[i].buy.length; j++) {
-                  maxBuy[i] = maxBuy[i] > finalResult[i].buy[j] ? maxBuy[i] : finalResult[i].buy[j];
-                  minBuy[i] = finalResult[i].buy[j] == null || minBuy[i] < finalResult[i].buy[j] ? minBuy[i] : finalResult[i].buy[j];
-                  maxSell[i] = maxSell[i] > finalResult[i].sell[j] ? maxSell[i] : finalResult[i].sell[j];
-                  minSell[i] = finalResult[i].sell[j] == null || minSell[i] < finalResult[i].sell[j] ? minSell[i] : finalResult[i].sell[j];
-                  averageBuy[i] += finalResult[i].buy[j];
-                  averageSell[i] += finalResult[i].sell[j];
-                  ratesCountBuy[i] += !finalResult[i].buy[j] ? 0 : 1;
-                  ratesCountSell[i] += !finalResult[i].sell[j] ? 0 : 1
-                }
-                finalResult[i].buy = {
-                  max: maxBuy[i],
-                  min: minBuy[i],
-                  average: (averageBuy[i] / ratesCountBuy[i]).toFixed(2),
-                  fluctuation: (averageBuy[i] / ratesCountBuy[i] - previousDayRatesBuy[i]).toFixed(2)
-                };
-                finalResult[i].sell = {
-                  max: maxSell[i],
-                  min: minSell[i],
-                  average: (averageSell[i] / ratesCountSell[i]).toFixed(2),
-                  fluctuation: (averageSell[i] / ratesCountSell[i] - previousDayRatesSell[i]).toFixed(2)
-                }
-              }
-              res.send(finalResult)
-            });
-          });
-        });
-      });
-    });
-});
+// app.get('/api/bankAverageRates', function (req, res) {
+//   // let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0)-24*60*60;
+//   // let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0)-24*60*60;
+//   let startPreviousDayDate = (new Date().setHours(0,0,0,0)/1000).toFixed(0);
+//   let endPreviousDayDate = (new Date().setHours(23,59,59,999)/1000).toFixed(0);
+//   let currencyLength, banks = {}, currency = {}, lastDate, previousDayLastDate, finalResult = [], previousLastDateValues = [], previousDayRatesBuy =[], previousDayRatesSell =[];
+//   let sqlDate = sqlJoin + ` WHERE institution_type = 'banks'`;
+//   con.query(sqlDate, function (error, results, fields) {
+//     if (error) throw error;
+//     lastDate = results[results.length - 1].date;
+//     con.query('SELECT * FROM currency', function (error, results, fields) {
+//       if (error) throw error;
+//       results.map(res => {
+//         currency[res.id] = res.name;
+//       });
+//       currencyLength = results.length;
+//         let sql = sqlJoin + ` WHERE institution_type = 'banks'` +
+//           ` AND date BETWEEN ` + startPreviousDayDate + ` AND ` + endPreviousDayDate;
+//         con.query(sql, function (error, results, fields) {
+//           if (error) throw error;
+//           previousDayLastDate = results[results.length - 1].date;
+//           let sqlPreviousDayLastDate = sqlJoin + ` WHERE institution_type = 'banks' AND date = ` + previousDayLastDate;
+//           con.query(sqlPreviousDayLastDate, function (error, results, fields) {
+//             if (error) throw error;
+//             let  previousDayAverageBuy = [], previousDayAverageSell = [],
+//               previousDayRatesCountBuy = [], previousDayRatesCountSell = [];
+//             results.forEach(rate => {
+//               const curr = previousLastDateValues.find(o => rate.currency_id === o.currency_id);
+//               if (curr) {
+//                 curr.buy.push(rate.value_buy);
+//                 curr.sell.push(rate.value_sell);
+//               } else {
+//                 const curr = {
+//                   buy: [],
+//                   sell: []
+//                 };
+//                 previousLastDateValues.push(curr);
+//                 curr.buy.push(rate.value_buy);
+//                 curr.sell.push(rate.value_sell);
+//               }
+//             });
+//             for (let i = 0; i < previousLastDateValues.length; i++) {
+//               previousDayAverageBuy[i] = 0;
+//               previousDayAverageSell[i] = 0;
+//               previousDayRatesCountBuy[i] = 0;
+//               previousDayRatesCountSell[i] = 0;
+//               for (let j = 0; j < previousLastDateValues[i].buy.length; j++) {
+//                 previousDayAverageBuy[i] += previousLastDateValues[i].buy[j];
+//                 previousDayAverageSell[i] += previousLastDateValues[i].sell[j];
+//                 previousDayRatesCountBuy[i] += !previousLastDateValues[i].buy[j] ? 0 : 1;
+//                 previousDayRatesCountSell[i] += !previousLastDateValues[i].sell[j] ? 0 : 1
+//               }
+//               previousDayRatesBuy[i] = (previousDayAverageBuy[i] / previousDayRatesCountBuy[i]).toFixed(2);
+//               previousDayRatesSell[i] = (previousDayAverageSell[i] / previousDayRatesCountSell[i]).toFixed(2)
+//             }
+//             let sqlLastDate = sqlJoin + ` WHERE institution_type = 'banks' AND date = ` + lastDate;
+//             con.query(sqlLastDate, function (error, results, fields) {
+//               if (error) throw error;
+//               let maxBuy = [], maxSell = [], minBuy = [], minSell = [], averageBuy = [], averageSell = [],
+//                 ratesCountBuy = [], ratesCountSell = [];
+//               results.forEach(rate => {
+//                 const cur = finalResult.find(o => rate.currency_id === o.currency_id);
+//                 if (cur) {
+//                   cur.buy.push(rate.value_buy);
+//                   cur.sell.push(rate.value_sell);
+//                 } else {
+//                   const cur = {
+//                     currency_id: rate.currency_id,
+//                     currency_description: currency[rate.currency_id],
+//                     buy: [],
+//                     sell: [],
+//                     date: rate.date
+//                   };
+//                   finalResult.push(cur);
+//                   cur.buy.push(rate.value_buy);
+//                   cur.sell.push(rate.value_sell);
+//                 }
+//               });
+//               for (let i = 0; i < finalResult.length; i++) {
+//                 maxBuy[i] = 0;
+//                 minBuy[i] = Infinity;
+//                 maxSell[i] = 0;
+//                 minSell[i] = Infinity;
+//                 averageBuy[i] = 0;
+//                 averageSell[i] = 0;
+//                 ratesCountBuy[i] = 0;
+//                 ratesCountSell[i] = 0;
+//                 for (let j = 0; j < finalResult[i].buy.length; j++) {
+//                   maxBuy[i] = maxBuy[i] > finalResult[i].buy[j] ? maxBuy[i] : finalResult[i].buy[j];
+//                   minBuy[i] = finalResult[i].buy[j] == null || minBuy[i] < finalResult[i].buy[j] ? minBuy[i] : finalResult[i].buy[j];
+//                   maxSell[i] = maxSell[i] > finalResult[i].sell[j] ? maxSell[i] : finalResult[i].sell[j];
+//                   minSell[i] = finalResult[i].sell[j] == null || minSell[i] < finalResult[i].sell[j] ? minSell[i] : finalResult[i].sell[j];
+//                   averageBuy[i] += finalResult[i].buy[j];
+//                   averageSell[i] += finalResult[i].sell[j];
+//                   ratesCountBuy[i] += !finalResult[i].buy[j] ? 0 : 1;
+//                   ratesCountSell[i] += !finalResult[i].sell[j] ? 0 : 1
+//                 }
+//                 finalResult[i].buy = {
+//                   max: maxBuy[i],
+//                   min: minBuy[i],
+//                   average: (averageBuy[i] / ratesCountBuy[i]).toFixed(2),
+//                   fluctuation: (averageBuy[i] / ratesCountBuy[i] - previousDayRatesBuy[i]).toFixed(2)
+//                 };
+//                 finalResult[i].sell = {
+//                   max: maxSell[i],
+//                   min: minSell[i],
+//                   average: (averageSell[i] / ratesCountSell[i]).toFixed(2),
+//                   fluctuation: (averageSell[i] / ratesCountSell[i] - previousDayRatesSell[i]).toFixed(2)
+//                 }
+//               }
+//               res.send(finalResult)
+//             });
+//           });
+//         });
+//       });
+//     });
+// });
 
 app.get('/api/cbRates', function (req, res) {
   let currency = [], currencyId = [], finalResult = [];
