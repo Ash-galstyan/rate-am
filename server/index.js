@@ -3,7 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const cors = require('cors');
+const path = require('path');
 
+app.use(express.static(path.join(__dirname, '../client/dist/rate-am')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -23,6 +25,11 @@ app.use(cors({ origin: '*' }));
 let sqlJoin = `SELECT rates.value_sell AS value_sell, rates.value_buy AS value_buy,` +
   `rates.date AS date, rates.currency_id AS currency_id, institutions.id AS institution_id,` +
   `institutions.institution_type AS institution_type FROM rates JOIN institutions ON rates.institutions_id = institutions.id`;
+
+app.get('*', (req,res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/rate-am/index.html'))
+});
+
 
 function institutionsApi(url, institutionType) {
   app.get(url, function (req, res) {
