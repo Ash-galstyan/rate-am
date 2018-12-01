@@ -26,11 +26,6 @@ let sqlJoin = `SELECT rates.value_sell AS value_sell, rates.value_buy AS value_b
   `rates.date AS date, rates.currency_id AS currency_id, institutions.id AS institution_id,` +
   `institutions.institution_type AS institution_type FROM rates JOIN institutions ON rates.institutions_id = institutions.id`;
 
-app.get('/*', (req,res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/rate-am/index.html'))
-});
-
-
 function institutionsApi(url, institutionType) {
   app.get(url, function (req, res) {
     let institutions = {}, currency = {}, lastDate, finalResult = [];
@@ -321,6 +316,9 @@ app.get('/api/cbAverageRates', function (req, res) {
   })
 });
 
+app.get('/*', (req,res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/rate-am/index.html'))
+});
 
 app.listen(80, function () {
   console.log('Node app is running');
