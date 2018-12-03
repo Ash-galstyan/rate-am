@@ -2,7 +2,7 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="table-container" *ngIf="data && averageRates">
-  <div class="table-header" fxLayout="row" fxLayoutAlign=" center">
+  <div class="table-header" fxLayout="row" fxLayoutAlign=" center" *ngIf="!isCentralBanksTable">
     <div fxFlex="3" fxLayout="row" fxLayoutAlign="center center" fxHide.xs></div>
     <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center">Bank</div>
     <div fxFlex="11" fxLayout="row" fxHide.xs fxLayoutAlign="center center">Date</div>
@@ -26,7 +26,34 @@
       </div>
     </div>
   </div>
-  <div class="table-body">
+            <!--Central Banks-->
+  <div class="table-header" fxLayout="row" fxLayoutAlign=" center" *ngIf="isCentralBanksTable">
+    <div fxFlex="full" fxLayoutAlign="center center">
+      <mat-form-field class="main-select">
+        <mat-select [(ngModel)]="centralBankCurrency" (ngModelChange)="currencyChange($event)">
+          <mat-option *ngFor="let option of currencyOptions" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center" fxHide.xs>Days</div>
+    <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center" *ngFor="let month of months">
+      <div class="table-column">
+        {{month.name}}
+      </div>
+    </div>
+  </div>
+  <div class="table-body" *ngIf="isCentralBanksTable">
+    <div fxLayout="row" fxLayoutAlign="start center" *ngFor="let item of data; let i = index">
+      <div class="table-column" fxFlex="3" fxHide.xs fxLayout="row" fxLayoutAlign="center center">{{i + 1}}</div>
+      <div class="table-column" fxFlex="3" *ngFor="let value of centralBankValues.currencyValues; let i = index">
+        {{centralBankFilteredValues.currencyValues[0].value}}
+      </div>
+    </div>
+  </div>
+
+  <div class="table-body" *ngIf="!isCentralBanksTable">
     <div fxLayout="row" fxLayoutAlign="start center" *ngFor="let item of data; let i = index">
       <div class="table-column" fxFlex="3" fxHide.xs fxLayout="row" fxLayoutAlign="center center">
         {{i + 1}}

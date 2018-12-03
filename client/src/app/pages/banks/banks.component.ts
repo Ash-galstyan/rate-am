@@ -5,9 +5,8 @@ import { Component, OnInit } from '@angular/core';
   template:`
     <app-rate-table
       [api]="'bankRates'"
-      [averageRatesApi]="'bankAverageRates'" 
+      [averageRatesApi]="'bankAverageRates'"
       [hasAverageTable]="true">
-      
     </app-rate-table>
     
   `
