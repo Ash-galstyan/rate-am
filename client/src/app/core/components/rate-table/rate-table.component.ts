@@ -27,6 +27,8 @@ export class RateTableComponent implements OnInit {
     currency_values: []
   };
   centralBankFilteredValues: any = {};
+  centralBankMonths: any = [];
+  centralBankDailyValues = [];
 
   constructor (
     private http: HttpClient,
@@ -60,10 +62,11 @@ export class RateTableComponent implements OnInit {
           });
         } else {
           this.currencyOptions.push(o.currency_description);
-          this.setCentralBankCurrency(o, this.currencyOptions);
-          console.log(this.centralBankFilteredValues);
+          if (o.currency_description === this.centralBankCurrency) {
+            this.setCentralBankCurrency(o);
+          }
         }
-      })
+      });
     });
     if (this.averageRatesApi && !this.isCentralBanksTable) {
       this.apiService.getData('http://54.86.92.122/api/' + this.averageRatesApi).subscribe( data => {
@@ -90,19 +93,33 @@ export class RateTableComponent implements OnInit {
   }
 
   currencyChange(currency) {
-    console.log(currency);
     this.data.forEach(o => {
-      this.setCentralBankCurrency(o, currency)
+      if (o.currency_description === currency) {
+        this.setCentralBankCurrency(o);
+      }
     });
+    console.log(this.centralBankFilteredValues)
   }
   
-  setCentralBankCurrency(o, currency) {
-    if (currency === o.currency_description) {
-      this.centralBankValues = {
-        currency_description : o.currency_description,
-        currencyValues : o.values
-      };
-      return this.centralBankFilteredValues = this.centralBankValues
-    }
+  setCentralBankCurrency(o) {
+    this.centralBankValues = {
+      currency_description : o.currency_description,
+      currencyValues : o.values
+    };
+    this.centralBankFilteredValues = this.centralBankValues;
+  
+    this.centralBankMonths = [];
+  
+    this.months.forEach((month, idx) => {
+      for (let i = 0; i < 31; i ++) {
+        const value = this.centralBankFilteredValues.currencyValues[idx][i];
+        if (this.centralBankMonths[i]) {
+          this.centralBankMonths[i].push(value ? value : {date: '', value: null})
+        } else {
+          this.centralBankMonths.push([value ? value : {date: '', value: null}])
+        }
+      }
+    });
+    console.log(this.centralBankMonths)
   }
 }

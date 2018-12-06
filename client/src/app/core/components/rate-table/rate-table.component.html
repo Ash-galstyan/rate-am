@@ -27,17 +27,18 @@
     </div>
   </div>
             <!--Central Banks-->
+  <div class="table-header currency-central-bank">
+    <span>Currency</span>
+    <mat-form-field class="main-select">
+      <mat-select [(ngModel)]="centralBankCurrency" (ngModelChange)="currencyChange($event)">
+        <mat-option *ngFor="let option of currencyOptions" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
   <div class="table-header" fxLayout="row" fxLayoutAlign=" center" *ngIf="isCentralBanksTable">
-    <div fxFlex="full" fxLayoutAlign="center center">
-      <mat-form-field class="main-select">
-        <mat-select [(ngModel)]="centralBankCurrency" (ngModelChange)="currencyChange($event)">
-          <mat-option *ngFor="let option of currencyOptions" [value]="option">
-            {{option}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center" fxHide.xs>Days</div>
+    <div fxFlex="11" fxLayout="row" fxLayoutAlign="center center" fxHide.xs>Days</div>
     <div fxFlex="grow" fxLayout="row" fxLayoutAlign="center center" *ngFor="let month of months">
       <div class="table-column">
         {{month.name}}
@@ -45,10 +46,10 @@
     </div>
   </div>
   <div class="table-body" *ngIf="isCentralBanksTable">
-    <div fxLayout="row" fxLayoutAlign="start center" *ngFor="let item of data; let i = index">
-      <div class="table-column" fxFlex="3" fxHide.xs fxLayout="row" fxLayoutAlign="center center">{{i + 1}}</div>
-      <div class="table-column" fxFlex="3" *ngFor="let value of centralBankValues.currencyValues; let i = index">
-        {{centralBankFilteredValues.currencyValues[0].value}}
+    <div fxLayout="row" fxLayoutAlign="start center" *ngFor="let day of centralBankMonths; let i = index">
+      <div class="table-column" fxFlex="11" fxHide.xs fxLayout="row" fxLayoutAlign="center center">{{i + 1}}</div>
+      <div class="table-column" fxFlex="grow" fxLayout="row" fxLayoutAlign="center center" *ngFor="let month of months; let idx = index">
+        {{day[idx].value ? day[idx].value : '-' }}
       </div>
     </div>
   </div>
