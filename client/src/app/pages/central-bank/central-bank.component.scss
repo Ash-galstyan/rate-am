@@ -1,0 +1,16 @@
+agm-map {
+  height: 300px;
+  width: 100%;
+}
+
+.location {
+  display: inline-block;
+  width: 50%;
+  .info {
+    display: table-cell;
+    width: 250px;
+    height: 200px;
+    padding: 10px;
+    vertical-align: middle;
+  }
+}

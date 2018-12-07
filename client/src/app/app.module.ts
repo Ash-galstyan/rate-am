@@ -24,10 +24,10 @@ import { RouterModule } from '@angular/router';
     HttpClientModule,
     CoreModule,
     PagesModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes)
   ],
-  providers: [HttpClientModule],
-  bootstrap: [AppComponent]
+  providers: [ HttpClientModule ],
+  bootstrap: [ AppComponent ]
 })
 
 export class AppModule { }

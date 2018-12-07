@@ -11,6 +11,7 @@ import { CentralBankComponent } from './central-bank/central-bank.component';
 import { InternationalRatesComponent } from './international-rates/international-rates.component';
 import { BanksComponent } from './banks/banks.component';
 import { CoreModule } from '../core/core.module';
+import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   imports: [
@@ -18,7 +19,10 @@ import { CoreModule } from '../core/core.module';
     HttpClientModule,
     MatTableModule,
     MatTabsModule,
-    CoreModule
+    CoreModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBHAuZ0l64uUnEtbuG1uedU7lpkaE6QHqA'
+    })
   ],
   declarations: [
     BanksComponent,
