@@ -28,7 +28,6 @@ export class RateTableComponent implements OnInit {
   };
   centralBankFilteredValues: any = {};
   centralBankMonths: any = [];
-  centralBankDailyValues = [];
 
   constructor (
     private http: HttpClient,
@@ -98,7 +97,6 @@ export class RateTableComponent implements OnInit {
         this.setCentralBankCurrency(o);
       }
     });
-    console.log(this.centralBankFilteredValues)
   }
   
   setCentralBankCurrency(o) {
@@ -120,6 +118,5 @@ export class RateTableComponent implements OnInit {
         }
       }
     });
-    console.log(this.centralBankMonths)
   }
 }

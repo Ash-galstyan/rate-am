@@ -1,18 +1,16 @@
 <div class="org-details">
-  <h3>Organization details</h3>
+  <h3 class="title">Organization details</h3>
   <div class="location">
     <div class="info">
       <h1>{{ title }}</h1>
-      <h3>Head office{{ address }}</h3>
-      <h3>Phone(s){{ phoneNumber }}</h3>
-      <h3>Fax{{ faxNumber }}</h3>
-      <h3>Email{{ email }}</h3>
-      <h3>URL{{ url }}</h3>
+      <h3>Head office {{ address }}</h3>
+      <h3>Phone(s) {{ phoneNumber }}</h3>
+      <h3>Fax {{ faxNumber }}</h3>
+      <h3>Email <a href="{{ email }}" target="_blank">{{ email }}</a></h3>
+      <h3>URL <a href="{{ url }}" target="_blank">{{ url }}</a></h3>
     </div>
   </div>
-  <div class="location">
-    <!-- this creates a google map on the page with the given lat/lng from -->
-    <!-- the component as the initial center of the map: -->
+  <div class="map">
     <agm-map [latitude]="lat" [longitude]="lng">
       <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
     </agm-map>

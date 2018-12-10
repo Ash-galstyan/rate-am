@@ -3,14 +3,44 @@ agm-map {
   width: 100%;
 }
 
-.location {
-  display: inline-block;
-  width: 50%;
+::ng-deep {
+  .table-header.currency-central-bank {
+    mat-form-field {
+      width: 270px;
+    }
+  }
+}
+
+.org-details {
+  position: relative;
+  height: 350px;
+  box-shadow: 0 1px 35px 1px rgba(0, 0, 0, 0.14);
+  padding: 15px;
+  margin: 10px 0;
+  .title {
+    color: #0e8fca;
+    font-weight: bold;
+    padding: 0 0 14px 0;
+    border-bottom: 1px solid #0e8fca;
+  }
+  .location {
+    display: inline-block;
+    width: 50%;
+    margin-top: 15px;
+  }
+
   .info {
-    display: table-cell;
-    width: 250px;
-    height: 200px;
-    padding: 10px;
-    vertical-align: middle;
+    h1, h3 {
+      padding: 0 20px 5px 0;
+    }
+    h3 {
+      font-size: 14px;
+    }
+  }
+  .map {
+    position: absolute;
+    right: 15px;
+    top: 61px;
+    width: 50%;
   }
 }
